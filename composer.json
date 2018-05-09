@@ -1,0 +1,21 @@
+{
+    "name": "nuttilea/table-control",
+    "description": "Table Control",
+    "keywords": ["git"],
+    "homepage": "https://github.com/Nuttilea/TableControl",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tonda Sachboj",
+            "email": "ask@me.forit"
+        }
+    ],
+    "require": {
+        "php": ">=5.6"
+    },
+    "autoload": {
+        "classmap": [
+            "src/"
+        ]
+    }
+}
