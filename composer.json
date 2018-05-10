@@ -15,8 +15,8 @@
         "dibi/dibi": ">=3.2.0"
     },
     "autoload": {
-        "classmap": [
-            "src/"
-        ]
+        "psr-4": {
+            "Nutillea\\TableView\\": "src/"
+        }
     }
 }
