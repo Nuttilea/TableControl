@@ -3,6 +3,7 @@ namespace Nutillea\TableControl;
 use Dibi\Connection;
 use Dibi\Fluent;
 use Nette\Object;
+use Nette\SmartObject;
 
 
 /**
@@ -11,8 +12,10 @@ use Nette\Object;
  * Date: 4.2.17
  * Time: 18:52
  */
-class DibiTableConnector extends Object implements ITableConnector {
-
+class DibiTableConnector implements ITableConnector {
+    
+    use SmartObject
+    
     protected $dibi;
     /** @var  \Dibi\Fluent */
     protected $selection;
