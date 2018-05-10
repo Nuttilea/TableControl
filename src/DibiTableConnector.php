@@ -1,5 +1,5 @@
 <?php
-namespace Nutillea\TableView;
+namespace Nutillea\TableControl;
 use Dibi\Connection;
 use Dibi\Fluent;
 use Nette\Object;
@@ -23,10 +23,11 @@ class DibiTableConnector extends Object implements ITableConnector {
 
     protected $where = [];
 
-    public function __construct(Connection $dibi, $tableName = null, $where = []) {
-        if ($tableName) $this->setTable($tableName);
+    public function __construct($dibi, $tableName = null, $where = []) {
+        if ($tableName && is_string($tableName)) $this->setTable($tableName);
         if ($where) $this->where = $where;
-        $this->dibi = $dibi;
+        if($dibi instanceof Connection) $this->dibi = $dibi;
+        if($dibi instanceof Fluent) $this->selection = $dibi;
     }
 
     public function setOnFindAll(callable $callable){

@@ -5,7 +5,7 @@
  * Date: 3.2.17
  * Time: 21:14
  */
-namespace Nutillea\TableView;
+namespace Nutillea\TableControl;
 
 class TableColumn {
 

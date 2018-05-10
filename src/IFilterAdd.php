@@ -5,7 +5,7 @@
  * Date: 5.2.17
  * Time: 19:13
  */
-namespace Nutillea\TableView;
+namespace Nutillea\TableControl;
 interface IFilterAdd{
     public function onFilterAdded(TableColumn $column);
 }

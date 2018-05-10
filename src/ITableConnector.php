@@ -6,7 +6,7 @@
  * Date: 3.2.17
  * Time: 20:40
  */
-namespace Nutillea\TableView;
+namespace Nutillea\TableControl;
 
 use Dibi\Fluent;
 

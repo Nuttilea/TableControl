@@ -6,9 +6,9 @@
  * Time: 22:17
  */
 
-namespace Nutillea\TableView\ActionControl;
+namespace Nutillea\TableControl\ActionControl;
 /**
- * Action - model / view ?
+ * Actions - model / view ?
  **/
 class Action extends \Nette\Application\UI\Control {
 
