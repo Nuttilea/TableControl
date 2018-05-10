@@ -14,7 +14,7 @@ use Nette\SmartObject;
  */
 class DibiTableConnector implements ITableConnector {
     
-    use SmartObject
+    use SmartObject;
     
     protected $dibi;
     /** @var  \Dibi\Fluent */
