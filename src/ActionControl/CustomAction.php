@@ -5,7 +5,7 @@
  * Date: 9.2.17
  * Time: 22:17
  */
-namespace Nutillea\TableControl\ActionControl;
+namespace Nuttilea\TableControl\ActionControl;
 
 
 /**

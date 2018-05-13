@@ -6,10 +6,10 @@
  * Time: 20:37
  */
 
-namespace Nutillea\TableControl;
+namespace Nuttilea\TableControl;
 
-use Nutillea\TableControl\ActionControl\Action;
-use Nutillea\TableControl\ActionControl\CustomAction;
+use Nuttilea\TableControl\ActionControl\Action;
+use Nuttilea\TableControl\ActionControl\CustomAction;
 use \Nette\Application\UI\Form;
 use Nette\Localization\ITranslator;
 

@@ -1,5 +1,5 @@
 <?php
-namespace Nutillea\TableControl;
+namespace Nuttilea\TableControl;
 use Dibi\Connection;
 use Dibi\Fluent;
 use Nette\Object;

@@ -6,7 +6,7 @@
  * Time: 13:09
  */
 
-namespace Nutillea\TableControl;
+namespace Nuttilea\TableControl;
 
 interface IInlineEdit {
     public function handleInlineEdit($id);
