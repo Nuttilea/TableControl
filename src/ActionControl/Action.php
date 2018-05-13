@@ -50,6 +50,7 @@ class Action extends \Nette\Application\UI\Control {
     private $latte = null;
     
     private $icon;
+
     /** @var \Nette\Application\UI\Link */
     private $link = null;
     
@@ -58,7 +59,9 @@ class Action extends \Nette\Application\UI\Control {
     private $label = null;
     
     private $onCreateLink = [];
-    
+
+    public $onAction = [];
+
     private $class = [];
     
     /** @var  \Nette\Localization\ITranslator */
@@ -136,20 +139,27 @@ class Action extends \Nette\Application\UI\Control {
     }
     
     public function render( $row, $key ) {
-        $link = clone $this->link;
+        $link = $this->link ? clone $this->link: null;
         $template = $this->template;
         
         if(!$this->latte) $this->setLatte($this->getLattePath('link')); //default template for all
         
         $template->setFile($this->latte);
         $template->setTranslator($this->getTranslator());
+
         $template->class = implode(' ', $this->class);
         if (!$key) {
             $key = $this->rowKeys;
         }
+
         if (!empty($this->onCreateLink)) {
             $this->onCreateLink[0]($row, $link);
         } else {
+            //If callback exists
+            if(!$link && count($this->onAction)) {
+                $link = $this->lazyLink('onAction');
+            }
+
             if (is_array($key)) {
                 foreach ($key as $rowKey => $linkKey) {
                     if (key_exists($rowKey, $row)) {
@@ -160,15 +170,36 @@ class Action extends \Nette\Application\UI\Control {
                 $link->setParameter($this->rowKeys, $row[ $key ]);
             }
         }
+
         $template->icon = $this->icon;
         $template->link = $link;
         $template->label = $this->label;
         $template->render();
     }
-    
-    public static function createAction( $action, \Nette\Application\UI\Link $link, $rowKeys = ['id'] ) {
+
+    public function handleOnAction(){
+        $rk = is_array($this->rowKeys)? $this->rowKeys : [$this->rowKeys];
+        $params = [];
+
+        foreach ($rk as $key){
+            $params[$key] = $this->getParameter($key);
+        }
+
+
+        foreach ($this->onAction as $onAction){
+            call_user_func($onAction, $params);
+        }
+    }
+
+    public static function createAction( $action,  $link, $rowKeys = ['id'] ) {
         $actionObj = new Action;
-        $actionObj->setLink($link, $rowKeys);
+        if(is_callable($link)) {
+            $actionObj->onAction[] = $link;
+            $actionObj->rowKeys = $rowKeys;
+        } else {
+            $actionObj->setLink($link, $rowKeys);
+        }
+
         if (is_array($action)) {
             $actionObj->setCustomAction($action);
         } else {

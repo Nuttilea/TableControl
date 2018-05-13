@@ -121,6 +121,11 @@ class TableControl extends \Nette\Application\UI\Control implements IFilterAdd {
         return $actionObj;
     }
 
+    public function addCallbackAction($name, $action, callable $link, $paramKey = 'id') {
+        $actionObj = Action::createAction($action, $link, $paramKey);
+        $this->actions[$name] = $actionObj;
+        return $actionObj;
+    }
 
     /**
      * @param CustomAction|callable $customAction
