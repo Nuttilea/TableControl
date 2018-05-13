@@ -7,104 +7,175 @@
  */
 
 namespace Nuttilea\TableControl\ActionControl;
+
 /**
  * Actions - model / view ?
  **/
 class Action extends \Nette\Application\UI\Control {
-
-    const EDIT = __DIR__ . "/edit.latte";
-    const EDIT_MODAl = __DIR__ . "/edit_modal.latte";
-    const DELETE = __DIR__ . "/delete.latte";
-    const DETAIL = __DIR__ . "/detail.latte";
-    const APPROVE = __DIR__ . "/approve.latte";
-    const DENY = __DIR__ . "/deny.latte";
-    const EDITORDER = __DIR__ . "/editorder.latte";
-
-    private $latte = self::EDIT;
-
+    
+    const EDIT       = 'edit'; //__DIR__ . "/edit.latte";
+    const EDIT_MODAl = 'editModal'; // . "/edit_modal.latte";
+    const DELETE     = 'delete'; // . "/delete.latte";
+    const DETAIL     = 'detail'; // . "/detail.latte";
+    const APPROVE    = 'approve'; // . "/approve.latte";
+    const DENY       = 'deny'; // . "/deny.latte";
+    
+    /**
+     * Allowed icon/latte/class
+     *
+     * @var array
+     */
+    public $icons = [
+        self::EDIT       => [
+            'icon' => 'fa fa-edit',
+        ],
+        self::EDIT_MODAl => [
+            'latte' => 'modal',
+            'icon'  => 'fa fa-magic',
+        ],
+        self::DELETE     => [
+            'icon' => 'fa fa-times',
+        ],
+        self::DETAIL     => [
+            'icon' => 'fa fa-eye',
+        ],
+        self::APPROVE    => [
+            'icon' => 'fa fa-check',
+        ],
+        self::DENY       => [
+            'icon' => 'fa fa-minus-circle',
+        ],
+    ];
+    
+    private $latte = null;
+    
+    private $icon;
     /** @var \Nette\Application\UI\Link */
     private $link = null;
-
+    
     private $rowKeys = 'rowId';
-
+    
     private $label = null;
-
+    
     private $onCreateLink = [];
-
-    private $class = null;
-
+    
+    private $class = [];
+    
     /** @var  \Nette\Localization\ITranslator */
     private $translator;
-
+    
     protected function getTranslator() {
         return $this->translator;
     }
-
-
+    
+    public function getLattePath($latte){
+        return __DIR__.'/'.$latte.'.latte';
+    }
+    
+    protected function setAction( $action ) {
+        
+        if (array_key_exists($action, $this->icons)) {
+            $values = $this->icons[ $action ];
+            $this->setIcon($values['icon']);
+            if (!empty($values['latte'])) {
+                $this->setLatte($this->getLattePath($values['latte']));
+            }
+            
+            if (!empty($values['class'])) {
+                $this->addClass($values['class']);
+            }
+        }
+        
+        return false;
+    }
+    
+    protected function setCustomAction( $action) {
+        $this->setIcon($action['icon']);
+        if (!empty($action['class'])) {
+            $this->addClass($action['class']);
+        }
+        if (!empty($action['latte'])) {
+            $this->setLatte($this->getLattePath($action['latte'])); //TODO: Make universal
+        }
+    }
+    
     /**
      * @param null $class
+     *
      * @return Action
      */
-    public function addClass($class) {
-        if (!$this->class) $this->class = '';
-        $this->class .= $class . ' ';
+    public function addClass( $class ) {
+        $this->class[$class] = $class;
+        
         return $this;
     }
-
+    
     /**
      * @param \Nette\Application\UI\Link $link
-     * @param string $rowKeys - ['rowKey' => 'linkKey'], [rowKey1, rowKey2]
+     * @param string                     $rowKeys - ['rowKey' => 'linkKey'], [rowKey1, rowKey2]
      */
-    public function setLink(\Nette\Application\UI\Link $link, $rowKeys = ['id']) {
+    public function setLink( \Nette\Application\UI\Link $link, $rowKeys = ['id'] ) {
         $this->link = $link;
         $this->rowKeys = $rowKeys;
     }
-
-
-    public function setLatte($latte) {
+    
+    public function setLatte( $latte ) {
         $this->latte = $latte;
     }
-
-
-    public function setLabel($label) {
+    
+    public function setIcon( $icon ) {
+        $this->icon = $icon;
+    }
+    
+    public function setLabel( $label ) {
         $this->label = $label;
     }
-
-    public function setOnCreateLink($callback) {
+    
+    public function setOnCreateLink( $callback ) {
         $this->onCreateLink[] = is_callable($callback) ? $callback : null;
     }
-
-    public function render($row, $key) {
+    
+    public function render( $row, $key ) {
         $link = clone $this->link;
         $template = $this->template;
+        
+        if(!$this->latte) $this->setLatte($this->getLattePath('link')); //default template for all
+        
         $template->setFile($this->latte);
         $template->setTranslator($this->getTranslator());
-
-        $template->class = $this->class;
-        if (!$key) $key = $this->rowKeys;
-
+        $template->class = implode(' ', $this->class);
+        if (!$key) {
+            $key = $this->rowKeys;
+        }
         if (!empty($this->onCreateLink)) {
             $this->onCreateLink[0]($row, $link);
         } else {
             if (is_array($key)) {
                 foreach ($key as $rowKey => $linkKey) {
-                    if (key_exists($rowKey, $row)) $link->setParameter($linkKey, $row[$rowKey]);
+                    if (key_exists($rowKey, $row)) {
+                        $link->setParameter($linkKey, $row[ $rowKey ]);
+                    }
                 }
             } else {
-                $link->setParameter($this->rowKeys, $row[$key]);
+                $link->setParameter($this->rowKeys, $row[ $key ]);
             }
         }
+        $template->icon = $this->icon;
         $template->link = $link;
         $template->label = $this->label;
         $template->render();
     }
+    
+    public static function createAction( $action, \Nette\Application\UI\Link $link, $rowKeys = ['id'] ) {
+        $actionObj = new Action;
+        $actionObj->setLink($link, $rowKeys);
+        if (is_array($action)) {
+            $actionObj->setCustomAction($action);
+        } else {
+            $actionObj->setAction($action);
+        }
 
-
-    public static function createAction($actionLatte, \Nette\Application\UI\Link $link, $rowKeys = ['id']) {
-        $action = new Action;
-        $action->setLink($link, $rowKeys);
-        $action->setLatte($actionLatte);
-        return $action;
+        return $actionObj;
     }
-
+    
 }

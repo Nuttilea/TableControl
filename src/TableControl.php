@@ -115,10 +115,10 @@ class TableControl extends \Nette\Application\UI\Control implements IFilterAdd {
     }
 
 
-    public function addAction($name, $actionLatte, \Nette\Application\UI\Link $link, $paramKey = 'id') {
-        $action = Action::createAction($actionLatte, $link, $paramKey);
-        $this->actions[$name] = $action;
-        return $action;
+    public function addAction($name, $action, \Nette\Application\UI\Link $link, $paramKey = 'id') {
+        $actionObj = Action::createAction($action, $link, $paramKey);
+        $this->actions[$name] = $actionObj;
+        return $actionObj;
     }
 
 

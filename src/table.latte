@@ -1,3 +1,15 @@
+<style>
+    .modal-dialog {
+        max-width: 100% !important;
+        margin: 1.75rem;
+    }
+
+    .modal-content, .modal-content iframe {
+        height: 90vh;
+        min-height: 100%;
+        border-radius: 0;
+    }
+</style>
 <div class="modal fade" id="tablecontrol_edit_modal" tabindex="-1" role="dialog"
      aria-labelledby="tablecontrol_edit_modal">
     <div class="modal-dialog" role="document">
@@ -20,21 +32,21 @@
 
 {snippet wholetable}
     {form filter}
-<div class="table-responsive">
-        <table class="table table-striped table-hover">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
 
-            <style>
-                .sort-icons {
-                    display: inline-block;
-                    font-size: 50%;
-                }
+                <style>
+                    .sort-icons {
+                        display: inline-block;
+                        font-size: 50%;
+                    }
 
-                .sort-icons > a {
-                    display: block;
-                }
-            </style>
+                    .sort-icons > a {
+                        display: block;
+                    }
+                </style>
 
-            <thead>
+                <thead>
 
                 <tr>
                     <th n:foreach="$columns as $column" scope="col">
@@ -49,11 +61,12 @@
                             {$column->label}
                         {/if}
                     </th>
-                    <th n:if="(isset($filterExists) && $filterExists) || $actions" scope="col" style="width: 150px">{ifset $_}{_"Actions"}{else}Actions{/ifset}</th>
+                    <th n:if="(isset($filterExists) && $filterExists) || $actions" scope="col"
+                                                                                   style="width: 150px">{ifset $_}{_"Actions"}{else}Actions{/ifset}</th>
                 </tr>
                 {if isset($filterExists) && $filterExists}
                     {var $ajax = $ajax ? 'ajax' : ''}
-                        {formContainer filter}
+                    {formContainer filter}
                         <tr>
                             <th n:foreach="$columns as $column">
                                 {ifset $form[filter][$column->name]}
@@ -64,67 +77,77 @@
                                 {input filter class=>'btn btn-sm btn-primary'}
                             </th>
                         </tr>
-                        {/formContainer}
+                    {/formContainer}
                 {/if}
-            </thead>
-            <tbody>
-                <tr n:foreach="$items as $item">
-                    {if isset($inlineEditRow) && $item[$primary] == $inlineEditRow}
-                        {formContainer inlineEdit}
-                            <td n:foreach="$columns as $column">
-                                {if $column->isInlineEditable()}
-                                    {$form[inlineEdit][$column->name]->getControl()}
-                                {else}
-                                    {$column->modifyCellValue($item)}
-                                {/if}
+                </thead>
+                <tbody>
+                {if $items}
+                    <tr n:foreach="$items as $item">
+                        {if isset($inlineEditRow) && $item[$primary] == $inlineEditRow}
+                            {formContainer inlineEdit}
+                                <td n:foreach="$columns as $column">
+                                    {if $column->isInlineEditable()}
+                                        {$form[inlineEdit][$column->name]->getControl()}
+                                    {else}
+                                        {$column->modifyCellValue($item)}
+                                    {/if}
+                                </td>
+                                <td>
+                                    {input rowId value=>$item[$primary]}
+                                    {input save}
+                                </td>
+                            {/formContainer}
+                        {else}
+                            <td n:foreach="$columns as $column">{$column->modifyCellValue($item)}</td>
+                            <td n:if="(isset($filterExists) && $filterExists) || $actions">
+                                {foreach $actions as $key => $action}
+                                    {control action-$key $item, $primary}
+                                {/foreach}
                             </td>
-                            <td>
-                                {input rowId value=>$item[$primary]}
-                                {input save}
-                            </td>
-                        {/formContainer}
-                    {else}
-                        <td n:foreach="$columns as $column">{$column->modifyCellValue($item)}</td>
-                        <td n:if="(isset($filterExists) && $filterExists) || $actions">
-                            {foreach $actions as $key => $action}
-                                {control action-$key $item, $primary}
-                            {/foreach}
+                        {/if}
+                    </tr>
+                {else}
+                    <tr>
+                        <td colspan="{(isset($filterExists) && $filterExists) || $actions ? count($items)+1 : count($items)}" class="text-center">
+                            <p style="font-size: 1.6em; color: #9e9e9e">No data</p>
                         </td>
-                    {/if}
-
-                </tr>
-            </tbody>
-        </table>
-</div>
+                    </tr>
+                {/if}
+                </tbody>
+            </table>
+        </div>
     {/form}
 
-    <nav aria-label="Page navigation">
-        {var $maxVisible = 5+1}
-        <ul class="pagination">
-            {var $pagesCount = $paginate->getPageCount()}
-            <li>
-                <a n:href="page page=>max(1, $paginate->page-1)" aria-label="Previous"
-                                                                 class="btn btn-default  {if $paginate->isFirst()}disabled{/if} {if $ajax}ajax{/if}">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-            {for $i=1; $i <= $pagesCount; $i++}
-                <li n:if="($i > $paginate->page-$maxVisible && $i-$paginate->page < $maxVisible ) || $i === 1 || $i === $pagesCount ">
-                    <a n:href="page page=>$i" class="btn btn-default {if $i === $paginate->page}active{/if} {if $ajax}ajax{/if}">{$i}</a>
+    {if $paginate->getPageCount() > 0}
+        <nav aria-label="Page navigation">
+            {var $maxVisible = 5+1}
+            <ul class="pagination">
+                {var $pagesCount = $paginate->getPageCount()}
+                <li>
+                    <a n:href="page page=>max(1, $paginate->page-1)" aria-label="Previous"
+                                                                     class="btn btn-default  {if $paginate->isFirst()}disabled{/if} {if $ajax}ajax{/if}">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
                 </li>
-                <li n:if="$i-$paginate->page === $maxVisible || $i === $paginate->page-$maxVisible">
-                    <a href="#" onclick="return false;" class="btn btn-default disabled {if $ajax}ajax{/if}">...</a>
+                {for $i=1; $i <= $pagesCount; $i++}
+                    <li n:if="($i > $paginate->page-$maxVisible && $i-$paginate->page < $maxVisible ) || $i === 1 || $i === $pagesCount ">
+                        <a n:href="page page=>$i"
+                                class="btn btn-default {if $i === $paginate->page}active{/if} {if $ajax}ajax{/if}">{$i}</a>
+                    </li>
+                    <li n:if="$i-$paginate->page === $maxVisible || $i === $paginate->page-$maxVisible">
+                        <a href="#" onclick="return false;" class="btn btn-default disabled {if $ajax}ajax{/if}">...</a>
+                    </li>
+                {/for}
+                <li>
+                    <a n:href="page page=>min($pagesCount, $paginate->page+1)"
+                            aria-label="Next"
+                            class="btn btn-default {if $paginate->isLast()}disabled{/if} {if $ajax}ajax{/if}">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
                 </li>
-            {/for}
-            <li>
-                <a n:href="page page=>min($pagesCount, $paginate->page+1)"
-                        aria-label="Next"
-                        class="btn btn-default {if $paginate->isLast()}disabled{/if} {if $ajax}ajax{/if}">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
+            </ul>
+        </nav>
+    {/if}
 
 {/snippet}
 
