@@ -34,7 +34,7 @@ class Action extends \Nette\Application\UI\Control {
             'icon'  => 'fa fa-magic',
         ],
         self::DELETE     => [
-            'icon' => 'fa fa-times',
+            'icon' => 'fa fa-times text-danger',
         ],
         self::DETAIL     => [
             'icon' => 'fa fa-eye',
