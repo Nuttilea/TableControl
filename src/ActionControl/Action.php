@@ -13,12 +13,12 @@ namespace Nuttilea\TableControl\ActionControl;
  **/
 class Action extends \Nette\Application\UI\Control {
     
-    const EDIT       = 'edit'; //__DIR__ . "/edit.latte";
-    const EDIT_MODAl = 'editModal'; // . "/edit_modal.latte";
-    const DELETE     = 'delete'; // . "/delete.latte";
-    const DETAIL     = 'detail'; // . "/detail.latte";
-    const APPROVE    = 'approve'; // . "/approve.latte";
-    const DENY       = 'deny'; // . "/deny.latte";
+    const EDIT       = 'edit';
+    const EDIT_MODAl = 'editModal';
+    const DELETE     = 'delete';
+    const DETAIL     = 'detail';
+    const APPROVE    = 'approve';
+    const DENY       = 'deny';
     
     /**
      * Allowed icon/latte/class
