@@ -6,8 +6,11 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Tonda Sachboj",
-            "email": "ask@me.forit"
+            "name": "Antonin Sajboch",
+            "email": "sajboch@gmail.com"
+        },{
+            "name": "VicHaunter",
+            "email": "vichaunter@gmail.com"
         }
     ],
     "require": {
