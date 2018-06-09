@@ -46,7 +46,7 @@ class Action extends \Nette\Application\UI\Control {
             'icon' => 'fa fa-minus-circle',
         ],
     ];
-    
+
     private $latte = null;
     
     private $icon;
@@ -66,7 +66,7 @@ class Action extends \Nette\Application\UI\Control {
     
     /** @var  \Nette\Localization\ITranslator */
     private $translator;
-    
+
     protected function getTranslator() {
         return $this->translator;
     }
