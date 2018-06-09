@@ -2,7 +2,6 @@
 namespace Nuttilea\TableControl;
 use Dibi\Connection;
 use Dibi\Fluent;
-use Nette\Object;
 use Nette\SmartObject;
 
 
