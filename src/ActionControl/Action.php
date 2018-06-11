@@ -8,6 +8,8 @@
 
 namespace Nuttilea\TableControl\ActionControl;
 
+use Nette\Localization\ITranslator;
+
 /**
  * Actions - model / view ?
  **/
@@ -35,6 +37,7 @@ class Action extends \Nette\Application\UI\Control {
         ],
         self::DELETE     => [
             'icon' => 'fa fa-times text-danger',
+            'confirm' => true,
         ],
         self::DETAIL     => [
             'icon' => 'fa fa-eye',
@@ -46,11 +49,11 @@ class Action extends \Nette\Application\UI\Control {
             'icon' => 'fa fa-minus-circle',
         ],
     ];
-
+    
     private $latte = null;
     
     private $icon;
-
+    
     /** @var \Nette\Application\UI\Link */
     private $link = null;
     
@@ -59,16 +62,22 @@ class Action extends \Nette\Application\UI\Control {
     private $label = null;
     
     private $onCreateLink = [];
-
+    
     public $onAction = [];
-
+    
     private $class = [];
     
+    private $confirm = false;
+    
     /** @var  \Nette\Localization\ITranslator */
-    private $translator;
-
+    private static $translator;
+    
+    public static function setTranslator(ITranslator $translator){
+        self::$translator = $translator;
+    }
+    
     protected function getTranslator() {
-        return $this->translator;
+        return self::$translator;
     }
     
     public function getLattePath($latte){
@@ -87,6 +96,9 @@ class Action extends \Nette\Application\UI\Control {
             if (!empty($values['class'])) {
                 $this->addClass($values['class']);
             }
+            if (!empty($values['confirm'])) {
+                $this->setConfirm($values['confirm']);
+            }
         }
         
         return false;
@@ -102,6 +114,9 @@ class Action extends \Nette\Application\UI\Control {
         }
     }
     
+    public function setConfirm($value = false){
+        $this->confirm = $value ? true : false;
+    }
     /**
      * @param null $class
      *
@@ -146,12 +161,12 @@ class Action extends \Nette\Application\UI\Control {
         
         $template->setFile($this->latte);
         $template->setTranslator($this->getTranslator());
-
+        
         $template->class = implode(' ', $this->class);
         if (!$key) {
             $key = $this->rowKeys;
         }
-
+        
         if (!empty($this->onCreateLink)) {
             $this->onCreateLink[0]($row, $link);
         } else {
@@ -159,7 +174,7 @@ class Action extends \Nette\Application\UI\Control {
             if(!$link && count($this->onAction)) {
                 $link = $this->lazyLink('onAction');
             }
-
+            
             if (is_array($key)) {
                 foreach ($key as $rowKey => $linkKey) {
                     if (key_exists($rowKey, $row)) {
@@ -170,27 +185,28 @@ class Action extends \Nette\Application\UI\Control {
                 $link->setParameter($this->rowKeys, $row[ $key ]);
             }
         }
-
+        
         $template->icon = $this->icon;
         $template->link = $link;
         $template->label = $this->label;
+        $template->confirm = $this->confirm;
         $template->render();
     }
-
+    
     public function handleOnAction(){
         $rk = is_array($this->rowKeys)? $this->rowKeys : [$this->rowKeys];
         $params = [];
-
+        
         foreach ($rk as $key){
             $params[$key] = $this->getParameter($key);
         }
-
-
+        
+        
         foreach ($this->onAction as $onAction){
             call_user_func($onAction, $params);
         }
     }
-
+    
     public static function createAction( $action,  $link, $rowKeys = ['id'] ) {
         $actionObj = new Action;
         if(is_callable($link)) {
@@ -199,13 +215,13 @@ class Action extends \Nette\Application\UI\Control {
         } else {
             $actionObj->setLink($link, $rowKeys);
         }
-
+        
         if (is_array($action)) {
             $actionObj->setCustomAction($action);
         } else {
             $actionObj->setAction($action);
         }
-
+        
         return $actionObj;
     }
     

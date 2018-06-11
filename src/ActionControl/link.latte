@@ -1,1 +1,1 @@
-<a href="{$link}" {if $class}class="{$class}"{/if}><i class="{$icon}" ></i></a>
+<a href="{$link}" {if $confirm}onclick="return confirm('{_"Are you sure?"}')"{/if} {if $class}class="{$class}"{/if}><i class="{$icon}" ></i></a>
