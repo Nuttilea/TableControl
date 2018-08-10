@@ -62,7 +62,7 @@
                         {/if}
                     </th>
                     <th n:if="(isset($filterExists) && $filterExists) || $actions" scope="col"
-                                                                                   style="width: 150px">{ifset $_}{_"Actions"}{else}Actions{/ifset}</th>
+                                                                                   style="width: 150px">{ifset $_}{_"Action"}{else}Actions{/ifset}</th>
                 </tr>
                 {if isset($filterExists) && $filterExists}
                     {var $ajax = $ajax ? 'ajax' : ''}

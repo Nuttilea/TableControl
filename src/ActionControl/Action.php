@@ -9,9 +9,10 @@
 namespace Nuttilea\TableControl\ActionControl;
 
 use Nette\Localization\ITranslator;
+use Nuttilea\TableControl\EmptyTranslator;
 
 /**
- * Actions - model / view ?
+ * Action - model / view ?
  **/
 class Action extends \Nette\Application\UI\Control {
     
@@ -21,6 +22,7 @@ class Action extends \Nette\Application\UI\Control {
     const DETAIL     = 'detail';
     const APPROVE    = 'approve';
     const DENY       = 'deny';
+    const PLAY       = 'play';
     
     /**
      * Allowed icon/latte/class
@@ -47,6 +49,9 @@ class Action extends \Nette\Application\UI\Control {
         ],
         self::DENY       => [
             'icon' => 'fa fa-minus-circle',
+        ],
+        self::PLAY       => [
+            'icon' => 'fa fa-play text-success',
         ],
     ];
     
@@ -75,9 +80,9 @@ class Action extends \Nette\Application\UI\Control {
     public static function setTranslator(ITranslator $translator){
         self::$translator = $translator;
     }
-    
+
     protected function getTranslator() {
-        return self::$translator;
+        return self::$translator ? self::$translator : self::$translator = new EmptyTranslator();
     }
     
     public function getLattePath($latte){

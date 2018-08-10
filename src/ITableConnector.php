@@ -12,8 +12,6 @@ use Dibi\Fluent;
 
 interface ITableConnector
 {
-
-    public function setTable($table);
     public function setDefaultSelection(Fluent $selection);
     public function findAll( $columns = '*', $where=[], $orderBy=null, $order='ASC', $limit = null, $offset=null);
     public function itemsCount( $where=[] );

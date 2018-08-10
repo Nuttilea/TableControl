@@ -8,6 +8,7 @@
 
 namespace Nuttilea\TableControl;
 
+use Nette\Application\UI\ITemplateFactory;
 use Nuttilea\TableControl\ActionControl\Action;
 use Nuttilea\TableControl\ActionControl\CustomAction;
 use \Nette\Application\UI\Form;
@@ -17,7 +18,7 @@ use Nette\Localization\ITranslator;
  * TODO: Inline edit -> custom update, how to get Form input, how to set Form input type -> DONE
  *
  */
-class TableControl extends \Nette\Application\UI\Control implements IFilterAdd {
+class TableControl extends ViewControl implements IFilterAdd {
 
     /**
      * @var
@@ -36,55 +37,24 @@ class TableControl extends \Nette\Application\UI\Control implements IFilterAdd {
     public $form;
 
     /* OK takze filter musi byt persistentni a musi jej upravovat odeslany formular */
-    /**
-     * @var bool
-     */
-    public $ajax = false;
-
-    /**
-     * @var
-     */
-    private $itemsPerPage = 20;
-
-    /**
-     * @var null @persistent
-     */
-    public $page = null;
 
     /** @persistent */
     public $filter = null;
     const EDIT = ":edit";
     const DELETE = ":delete";
     const DETAIL = ":detail";
-    /** @var ITableConnector */
-    protected $iTableConnector;
+
     /** @var Action[] */
     public $actions = [];
 
-    /**
-     * @var array
-     */
-    public $items = [];
 
     /**
      * @var array
      */
     protected $currentFilter = [];
 
-    /** @persistent */
-    public $order = null;
-
-    /** @persistent */
-    public $orderby = null;
-
-    protected $latteTemplate = '/table.latte';
-
     private $inlineEditable = true;
     private $inlineEditRow;
-
-
-    /** @var  ITranslator */
-    private $translator;
 
     /**
      * TableControl constructor.
@@ -94,24 +64,12 @@ class TableControl extends \Nette\Application\UI\Control implements IFilterAdd {
         $this->form = $this->createForm();
     }
 
-    /**
-     * @return ITranslator
-     */
-    protected function getTranslator() {
-        return $this->translator;
-    }
-
-
     public function setItemsPerPage($itemsPerPage) {
         $this->itemsPerPage = $itemsPerPage;
     }
 
-
-    /**
-     * @param ITableConnector $iTableConnector
-     */
-    public function setITableConnector(ITableConnector $iTableConnector) {
-        $this->iTableConnector = $iTableConnector;
+    public function setTemplate($latteTemplate){
+        $this->latteTemplate = $latteTemplate;
     }
 
 
@@ -155,23 +113,16 @@ class TableControl extends \Nette\Application\UI\Control implements IFilterAdd {
     }
 
 
-    /**
-     * @param bool $ajax
-     */
-    public function setAjax($ajax = true) {
-        $this->ajax = $ajax;
-    }
 
 
-    public function beforeRender() {
-        $this->template->setTranslator($this->getTranslator());
-    }
+
+
 
 
     public function render() {
-        $this->beforeRender();
+        parent::render();
         $template = $this->template;
-        $template->setFile(__DIR__ . $this->latteTemplate);
+        $template->setFile($this->latteTemplate);
         //Filter prepare
         $this->createCurrentFilter(json_decode($this->filter));
         if ($this->filter) {
@@ -182,26 +133,19 @@ class TableControl extends \Nette\Application\UI\Control implements IFilterAdd {
                 }
             }
         }
-        //Pagination
-        $page = $this->getParameter('page', 1);
-        $paginate = new \Nette\Utils\Paginator();
-        $paginate->setItemCount($this->iTableConnector->itemsCount($this->currentFilter));
-        $paginate->setItemsPerPage($this->itemsPerPage);
-        $paginate->setPage($page);
         //Template variables prepare
-        $template->items = $this->iTableConnector->findAll('*', $this->currentFilter, $this->orderby, $this->order, $paginate->getItemsPerPage(), $paginate->getOffset());
+        $template->items = $this->items;
         $template->columns = $this->columns;
         $this->template->actions = $this->actions;
         $this->template->filterExists = count($this->filterItems) > 0;
         $this->template->ajax = $this->ajax;
-        $this->template->paginate = $paginate;
+        $this->template->paginate = $this->getPaginator();
         $this->template->primary = $this->primary;
-//        $this->template->inlineEditRow = $this->inlineEditRow;
         $template->render();
     }
 
 
-//
+    //
     public function handlePage($page = 0){
         $this->page = $page;
         if ($this->presenter->isAjax()) {
@@ -344,7 +288,7 @@ class TableControl extends \Nette\Application\UI\Control implements IFilterAdd {
      */
     public function addColumn($column, $name = null) {
         if (!$name) $name = $column;
-        if ($this->translator) {
+        if ($this->getTranslator()) {
             $name = $this->getTranslator()->translate($name);
         }
         return $this->columns[$column] = new TableColumn($column, $name, $this);

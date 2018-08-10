@@ -9,7 +9,7 @@ namespace Nuttilea\TableControl\ActionControl;
 
 
 /**
- * Actions - model / view ?
+ * Action - model / view ?
  **/
 class CustomAction extends \Nette\Application\UI\Control {
 
